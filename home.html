@@ -12,23 +12,31 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" type="text/css"> 
 
   <!-- Personal Stylesheets -->
-  <link rel="stylesheet" href="css/design_simple.css">
-  l
+  <link rel="stylesheet" href="css/design.css">
+  <link rel="stylesheet" href="css/bootstrap-select.css">
 
   <!-- Third-Party Libraries -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
   <script src="http://d3js.org/queue.v1.min.js"></script>
-
-
+  
+  <!-- Personal Libraries -->
   <script src="js/bootstrap-select.js" type="text/javascript"></script>
-  <!-- Personal Libraries 
-
+  <script src="js/main_vis.js" type="text/javascript"></script>
+  <script src="js/ambient_vis.js" type="text/javascript"></script>
+  <script src="js/fridge_vis.js" type="text/javascript"></script>
+  <!--
   <script src="js/emission_vis.js" type="text/javascript"></script>
   <script src="js/cost_vis.js" type="text/javascript"></script>
-  <script src="js/temperature_vis.js" type="text/javascript"></script>
-  -->
+  <script src="js/temperature_vis.js" type="text/javascript"></script> -->
+  
+  <!--
+    <script src="http://code.highcharts.com/highcharts.js"></script>
+    <script src="http://code.highcharts.com/modules/exporting.js"></script>
+    <script src="js/dashboard.js"></script>
+    -->
+
 </head>
 <body>
 <nav class="navbar navbar-default navbar-static-top" role="navigation">
@@ -48,21 +56,19 @@
         <li><a href="#">Competition</a></li>
         <li><a href="#">Ways to Save</a></li>
       </ul>
-    </div>     
+    </div>      
   </div>
 </nav>
 <body>
 <!-- Content -->
 <div class="container">
   <div class="col-xs-8" id="graphs">
-    <div class="row vis_dimension emission" id="emission_graph">
-      <div class="row control_dimension">
-        <div class="select_menu">
+    <div class="row control_dimension">
+      <div class="select_menu">
         <select class="selectpicker" id="selected_choice">
           <li><option id="usage">Usage</option></li>
           <option id="emission">Emission</option>
           <option id="cost">Cost</option>
-          <option id="temperature">Temperature</option>
         </select>
         </div>
         <div class="select_menu">
@@ -74,31 +80,58 @@
         </select>
         </div>
         <div class="select_menu">
-        <select class="selectpicker" id="selected_interval">
-          <option id="interval_day">Hour of Day</option>
-          <option id="interval_week">Day of Week</option>
-          <option id="interval_month"></option>
-          <option id="intervall_all">All Time</option>
+        <select class="selectpicker" id="selected_summary">
+          <option id="summary_none">None</option>
+          <option id="summary_day">Hour of Day</option>
+          <option id="summary_week">Day of Week</option>
+          <option id="summary_month">Month of Year</option>
+          <option id="summaryl_all">All Time</option>
         </select>
-        </div>
       </div>
-      Graph
     </div>
+    <div class="row vis_dimension main_info" id="main_graph">
+    </div>
+    <div class="row vis_dimension ambient_info" id="ambient_graph">
+<!--       <ul class="nav nav-tabs nav-justified">
+        <li role="button" class="active"><a class="tabs" data-toggle="tab" id="energy">Energy</a></li>
+        <li role="button"><a class="tabs" data-toggle="tab" id="cost">Cost</a></li>
+        <li role="button"><a class="tabs" data-toggle="tab" id="emission">Emission</a></li>
+      </ul> -->
+    </div>
+    <div class="row vis_dimension fridge_info" id="fridge_graph">
+    </div>
+ <!--    <div class="row vis_dimension switch_info" id="switch_info">
+    </div> -->
   </div>
   <div class="col-xs-4" id="infographic">
-    <div class="row vis_dimension emission" id="emission_info">
-      <div class="row control_dimension">
+    <div class="row control_dimension">
       Control 
-      </div>
-      Infographic
     </div>
+    <div class="row vis_dimension main_info" id="main_info">
+      Main Info
+    </div>
+    <div class="row vis_dimension ambient_info" id="ambient_info">
+      Ambient Info
+    </div>
+    <div class="row vis_dimension fridge_info" id="fridge_info">
+      Fridge Info
+    </div>
+<!--     <div class="row vis_dimension switch_info" id="switch_info">
+      Switch Info
+    </div>  -->
   </div>
 </div>
 <script>
 
+// StateMap
 
 $(document).ready(function(){ 
-//
+  var stateMap = {
+    info: "usage",
+    interval: "last_day",
+    summary: "none"
+  }; 
+
   $('.selectpicker').selectpicker();
   
   $('#selected_choice').on('change', function(){
@@ -110,8 +143,38 @@ $(document).ready(function(){
     var selected = $(this).find("option:selected").val();
     console.log(selected);
   });
-  //
 
+  $('#selected_summary').on('change', function(){
+    var selected = $(this).find("option:selected").val();
+    console.log(selected);
+  });
+
+function initModule(error, usage_data, ambient_temp, fridge_temp){
+  if(error){
+    console.log(error);
+    throw error;
+  }
+  else{
+    usageData = usage_data;
+    ambientData = ambient_temp;
+    fridgeData = fridge_temp;
+
+  }
+
+  main_vis = new MainVis(d3.select("#main_graph"), usageData);
+  ambient_vis = new AmbientVis(d3.select("#ambient_graph"), ambientData)
+  fridge_vis = new FridgeVis(d3.select("#fridge_graph"), fridgeData)
+}
+
+function loadData(){
+  queue()
+    .defer(d3.csv, 'data/usage.csv')
+    .defer(d3.csv, 'data/ambient_temp.csv')
+    .defer(d3.csv, 'data/fridge_temp.csv')
+    .await(initModule)
+  }
+
+  loadData();
 });
 
 </script>

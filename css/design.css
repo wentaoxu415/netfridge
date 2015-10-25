@@ -1,14 +1,4 @@
-.main_info{
-	background: #3D3D99;
-}
 
-.ambient_info{
-	background: #5C5C8A;
-}
-
-.fridge_info{
-	background: #8585AD;
-}
 
 .switch_info{
 	background: #C2C2D6;
@@ -30,7 +20,7 @@
 
 .vis_dimension{
 	width: 100%;
-	height: 22.5%;
+	height: 30%;
 	min-width: 320px;
   	min-height: 100px;
   	padding-right: 0px;
@@ -54,4 +44,24 @@
 	margin-top: 10px;
 	margin-right:10px;
 }
+
+/* Style for graphs */
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.x.axis path {
+  
+}
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+
 
