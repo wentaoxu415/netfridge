@@ -51,9 +51,11 @@ MainVis.prototype.initVis = function(){
   this.y.domain(d3.extent(that.Data, function(d) {return d.value; }));
 
 
-  this.line = d3.svg.line()
+  this.line = d3.svg.area()
     .x(function(d){return that.x(d.time);})
-    .y(function(d){return that.y(d.value);})
+    .y0(this.height)
+    .y1(function(d){return that.y(d.value);})
+    
 
   this.svg = d3.select("#main_graph").append("svg")
     .attr("width", this.width + this.margin.left + this.margin.right)
@@ -79,7 +81,7 @@ MainVis.prototype.initVis = function(){
 
   this.svg.append("path")
     .datum(this.Data)
-    .attr("class", "line")
+    .attr("class", "main_area")
     .attr("d", this.line);
 
 }

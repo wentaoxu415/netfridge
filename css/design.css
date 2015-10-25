@@ -63,5 +63,14 @@
   stroke-width: 1.5px;
 }
 
+.main_area{
+	fill:#C7EFCF;
+}
 
+.fridge_area {
+  fill: steelblue;
+}
 
+.ambient_area{
+	fill: #FF9933;
+}
