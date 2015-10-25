@@ -64,7 +64,7 @@
 }
 
 .main_area{
-	fill:#C7EFCF;
+	fill:#99d0b0;
 }
 
 .fridge_area {
@@ -73,4 +73,12 @@
 
 .ambient_area{
 	fill: #FF9933;
+}
+
+#nav_color{
+	background-color: #50A3A2
+}
+
+#nav_font{
+	color: white;
 }
